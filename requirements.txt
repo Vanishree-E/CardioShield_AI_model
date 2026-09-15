@@ -6,3 +6,4 @@ xgboost
 shap
 lime
 joblib
+gunicorn
