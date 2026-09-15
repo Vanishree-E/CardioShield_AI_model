@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}History — CardioXAI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Your past checks</h1>
+  <p>Every time you run a check, we save it here with the date, what you entered, and what the model estimated — so you can look back or compare over time. This is saved locally, only on this device.</p>
+</div>
+<div class="ecg-divider"></div>
+
+<div class="panel">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+    <h2 style="margin:0;">Records</h2>
+    <button class="btn btn-ghost" id="clear-btn">Clear history</button>
+  </div>
+  <div id="history-empty" class="empty-state" style="display:none;">No predictions yet — run one from the Predict page.</div>
+  <div style="overflow-x:auto;">
+    <table id="history-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Timestamp</th><th>Age</th><th>Sex</th><th>CP</th><th>Chol</th>
+          <th>Thalach</th><th>Model</th><th>Result</th><th>P(disease)</th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

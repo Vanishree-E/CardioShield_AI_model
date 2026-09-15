@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Model Comparison — CardioXAI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Model comparison</h1>
+  <p>This is the "under the hood" page — it compares four different prediction methods against each other so you can see how they stack up. You don't need to understand these numbers to use the risk checker; higher is better on every column, and Random Forest is used by default because it scores best overall.</p>
+</div>
+<div class="ecg-divider"></div>
+
+<div class="panel">
+  <h2>Metrics table</h2>
+  <table id="metrics-table">
+    <thead>
+      <tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th><th>ROC-AUC</th></tr>
+    </thead>
+    <tbody id="metrics-body"></tbody>
+  </table>
+</div>
+
+<div style="height:20px;"></div>
+
+<div class="panel">
+  <h2>Visual comparison</h2>
+  <div class="chart-wrap medium"><canvas id="compare-chart"></canvas></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

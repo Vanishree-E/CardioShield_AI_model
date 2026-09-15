@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="{{ 'ta' if current_lang == 'ta' else 'en' }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Heart Disease XAI{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="16" stroke="#3FBFAE" stroke-width="1.4"/>
+        <path d="M4 17 H11 L14 9 L18 25 L21 17 H30" stroke="#E8664E" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="brand-text">CardioXAI<span>{{ t('brand_tagline') }}</span></div>
+    </div>
+
+    <div class="lang-switch" role="group" aria-label="Language / மொழி">
+      <a href="{{ url_for('set_language', lang='en', next=request.path) }}" class="{{ 'active' if current_lang == 'en' else '' }}">EN</a>
+      <a href="{{ url_for('set_language', lang='ta', next=request.path) }}" class="{{ 'active' if current_lang == 'ta' else '' }}">தமிழ்</a>
+    </div>
+
+    <nav class="nav">
+      {% if current_user %}
+      <a href="/" class="{{ 'active' if active == 'predict' else '' }}">{{ t('nav_predict') }}</a>
+      <a href="/symptoms" class="{{ 'active' if active == 'symptoms' else '' }}">{{ t('nav_symptoms') }}</a>
+      <a href="/reports" class="{{ 'active' if active == 'reports' else '' }}">{{ t('nav_reports') }}</a>
+      <a href="/history" class="{{ 'active' if active == 'history' else '' }}">{{ t('nav_history') }}</a>
+      <a href="/compare" class="{{ 'active' if active == 'compare' else '' }}">{{ t('nav_compare') }}</a>
+      {% else %}
+      <a href="{{ url_for('login') }}" class="{{ 'active' if active == 'login' else '' }}">{{ t('nav_login') }}</a>
+      <a href="{{ url_for('register') }}" class="{{ 'active' if active == 'register' else '' }}">{{ t('nav_register') }}</a>
+      {% endif %}
+    </nav>
+    {% if current_user %}
+    <div class="sidebar-user">
+      {{ t('signed_in_as') }} <strong>{{ current_user.name }}</strong><br>
+      <a href="{{ url_for('logout') }}">{{ t('log_out') }}</a>
+    </div>
+    {% endif %}
+    <div class="sidebar-footer">
+      {{ t('footer_text')|safe }}
+    </div>
+  </aside>
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

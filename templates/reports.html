@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ t('reports_title') }} — CardioXAI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('reports_title') }}</h1>
+  <p>{{ t('reports_subtitle') }}</p>
+</div>
+<div class="ecg-divider"></div>
+
+<div class="grid grid-2">
+  <div class="panel" style="max-width:460px;">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="disclaimer-banner">
+          {% for m in messages %}{{ m }}<br>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('reports_page') }}" enctype="multipart/form-data">
+      <div class="field">
+        <label for="report_file">{{ t('label_report_file') }}</label>
+        <input type="file" id="report_file" name="report_file" accept="image/*,.pdf" required>
+      </div>
+      <div class="field">
+        <label for="note">{{ t('label_report_note') }}</label>
+        <input type="text" id="note" name="note" maxlength="200">
+      </div>
+      <button type="submit" class="btn">{{ t('btn_upload') }}</button>
+    </form>
+  </div>
+</div>
+
+<div style="height:20px;"></div>
+
+<div class="panel">
+  <h2>{{ t('reports_gallery_heading') }}</h2>
+  {% if not reports %}
+  <div class="empty-state">{{ t('reports_empty') }}</div>
+  {% else %}
+  <div class="report-grid">
+    {% for r in reports %}
+    <div class="report-card">
+      {% if r.filename.rsplit('.', 1)[1].lower() in ['png','jpg','jpeg','gif','webp'] %}
+      <a href="{{ url_for('serve_report', report_id=r.id) }}" target="_blank">
+        <img src="{{ url_for('serve_report', report_id=r.id) }}" alt="{{ r.original_name }}">
+      </a>
+      {% else %}
+      <a href="{{ url_for('serve_report', report_id=r.id) }}" target="_blank" class="report-file-icon">PDF · {{ r.original_name }}</a>
+      {% endif %}
+      <div class="report-meta">
+        {{ r.original_name }}{% if r.note %} — {{ r.note }}{% endif %}<br>
+        {{ t('uploaded_on') }}: {{ r.uploaded_at }}
+      </div>
+      <form method="post" action="{{ url_for('delete_report', report_id=r.id) }}"
+            onsubmit="return confirm('{{ 'Delete this report?' if current_lang == 'en' else 'இந்த அறிக்கையை நீக்கவா?' }}');">
+        <button type="submit" class="btn btn-ghost" style="width:100%;">{{ t('btn_delete') }}</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

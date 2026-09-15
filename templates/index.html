@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Check your heart risk — CardioXAI{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ t('index_title') }}</h1>
+  <p>{{ t('index_subtitle') }}</p>
+</div>
+<div class="disclaimer-banner">
+  {{ t('disclaimer_text') }}
+</div>
+<div class="ecg-divider"></div>
+
+<div class="grid grid-2">
+  <div class="panel">
+    <h2>{{ t('panel_your_info') }}</h2>
+    <form id="predict-form">
+      <div class="field">
+        <label for="model_name">{{ t('label_model') }}</label>
+        <select id="model_name" name="model_name">
+          {% for m in model_names %}
+          <option value="{{ m }}" {{ 'selected' if m == best_model else '' }}>{{ m }}{{ ' (recommended)' if m == best_model else '' }}</option>
+          {% endfor %}
+        </select>
+        <div class="hint">{{ t('hint_model') }}</div>
+      </div>
+
+      <div class="field">
+        <label for="age">{{ t('label_age') }} — <span id="age-out">54</span> {{ 'years' if current_lang == 'en' else 'ஆண்டுகள்' }}</label>
+        <input type="range" id="age" name="age" min="20" max="90" value="54" oninput="document.getElementById('age-out').textContent=this.value">
+      </div>
+
+      <div class="field">
+        <label for="sex">{{ t('label_sex') }}</label>
+        <select id="sex" name="sex">
+          <option value="1">{{ t('option_male') }}</option>
+          <option value="0">{{ t('option_female') }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="cp">{{ t('label_cp') }}</label>
+        <select id="cp" name="cp">
+          <option value="0">Classic heart-type pain — pressure/tightness, often brought on by exertion</option>
+          <option value="1">Unusual chest pain that doesn't quite fit a typical pattern</option>
+          <option value="2">Chest pain that seems unrelated to the heart (e.g. muscular, digestive)</option>
+          <option value="3">No chest pain at all</option>
+        </select>
+        <div class="hint">Doctors call these "typical angina," "atypical angina," "non-anginal pain," and "asymptomatic" — pick whichever description sounds closest. Not sure if what you're feeling is heart-related or something else, like a panic attack? See the <a href="/symptoms">symptoms guide</a>.</div>
+      </div>
+
+      <div class="field">
+        <label for="trestbps">{{ t('label_trestbps') }} — <span id="trestbps-out">130</span> mm Hg</label>
+        <input type="range" id="trestbps" name="trestbps" min="80" max="200" value="130" oninput="document.getElementById('trestbps-out').textContent=this.value">
+        <div class="hint">The top number from a blood pressure cuff reading, taken while sitting calmly. A typical healthy reading is around 120.</div>
+      </div>
+
+      <div class="field">
+        <label for="chol">{{ t('label_chol') }} — <span id="chol-out">246</span> mg/dl</label>
+        <input type="range" id="chol" name="chol" min="100" max="600" value="246" oninput="document.getElementById('chol-out').textContent=this.value">
+        <div class="hint">Total cholesterol from a blood test. Under 200 is generally considered desirable.</div>
+      </div>
+
+      <div class="field">
+        <label for="fbs">{{ t('label_fbs') }}</label>
+        <select id="fbs" name="fbs">
+          <option value="0">{{ t('option_no') }}</option>
+          <option value="1">{{ t('option_yes') }}</option>
+        </select>
+        <div class="hint">This is a blood sugar test done after not eating for several hours — a marker doctors use to check for diabetes.</div>
+      </div>
+
+      <div class="field">
+        <label for="restecg">{{ t('label_restecg') }}</label>
+        <select id="restecg" name="restecg">
+          <option value="0">Normal</option>
+          <option value="1">Minor irregularity in the heart's electrical signal</option>
+          <option value="2">Signs of a thickened heart muscle wall</option>
+        </select>
+        <div class="hint">An ECG (electrocardiogram) records your heart's electrical activity. If you haven't had one, "Normal" is a reasonable default.</div>
+      </div>
+
+      <div class="field">
+        <label for="thalach">{{ t('label_thalach') }} — <span id="thalach-out">150</span> bpm</label>
+        <input type="range" id="thalach" name="thalach" min="60" max="220" value="150" oninput="document.getElementById('thalach-out').textContent=this.value">
+        <div class="hint">The fastest your heart beat during a treadmill or exercise stress test, in beats per minute.</div>
+      </div>
+
+      <div class="field">
+        <label for="exang">{{ t('label_exang') }}</label>
+        <select id="exang" name="exang">
+          <option value="0">{{ t('option_no') }}</option>
+          <option value="1">{{ t('option_yes') }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="oldpeak">{{ t('label_oldpeak') }} — <span id="oldpeak-out">1.0</span></label>
+        <input type="range" id="oldpeak" name="oldpeak" min="0" max="6.5" step="0.1" value="1.0" oninput="document.getElementById('oldpeak-out').textContent=this.value">
+        <div class="hint">A number from an exercise ECG showing how much the heart's signal dipped under stress. Higher usually means more strain. Leave at the default if you don't know it.</div>
+      </div>
+
+      <div class="field">
+        <label for="slope">{{ t('label_slope') }}</label>
+        <select id="slope" name="slope">
+          <option value="0">Rising (upsloping)</option>
+          <option value="1">Flat</option>
+          <option value="2">Falling (downsloping)</option>
+        </select>
+        <div class="hint">Another exercise-ECG reading. If you don't know this, "Flat" is the most common default.</div>
+      </div>
+
+      <div class="field">
+        <label for="ca">{{ t('label_ca') }}</label>
+        <select id="ca" name="ca">
+          <option value="0">0</option><option value="1">1</option>
+          <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+        </select>
+        <div class="hint">Comes from a dye test (angiogram) that shows blocked or narrowed vessels around the heart. Leave at 0 if you've never had this scan.</div>
+      </div>
+
+      <div class="field">
+        <label for="thal">{{ t('label_thal') }}</label>
+        <select id="thal" name="thal">
+          <option value="1">Normal</option>
+          <option value="2">Fixed defect (a permanent area of reduced blood flow)</option>
+          <option value="3">Reversible defect (a temporary area of reduced blood flow)</option>
+        </select>
+        <div class="hint">A test related to blood flow patterns, sometimes measured during a nuclear stress test. If you've never had this test, "Normal" is a reasonable default.</div>
+      </div>
+
+      <button type="submit" class="btn">{{ t('btn_check_risk') }}</button>
+    </form>
+  </div>
+
+  <div>
+    <div class="panel" id="result-panel">
+      <h2>{{ t('panel_your_result') }}</h2>
+      <div class="empty-state" id="result-empty">{{ t('result_fill_hint') }}</div>
+      <div id="result-content" style="display:none;">
+        <div id="result-badge" class="result-badge"></div>
+        <div class="prob-bar-track"><div class="prob-bar-fill" id="prob-fill" style="width:0%"></div></div>
+        <div class="prob-caption" id="prob-caption"></div>
+      </div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="panel" id="explain-panel" style="display:none;">
+      <h2>{{ t('panel_explain_title') }}</h2>
+      <p style="color:var(--text-dim); font-size:13px; margin-top:-8px;">{{ t('panel_explain_sub') }}</p>
+      <button type="button" class="btn btn-ghost" id="explain-btn">{{ t('btn_explain') }}</button>
+      <div id="explain-loading" class="loading-pulse" style="display:none; margin-top:14px;">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span id="explain-loading-text">{{ t('btn_explain_loading') }}</span>
+      </div>
+      <div id="explain-content" style="display:none; margin-top:14px;">
+        <div id="explain-source-badge" class="tag" style="margin-bottom:10px;"></div>
+        <p id="explain-text" style="line-height:1.65; font-size:14px;"></p>
+      </div>
+      <div class="fine-print" style="margin-top:14px;">{{ t('plan_disclaimer') }}</div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="panel" id="plan-panel" style="display:none;">
+      <h2>{{ t('plan_heading') }}</h2>
+      <div class="stage-row">
+        <span class="hint" style="margin:0;">{{ t('plan_stage_label') }}:</span>
+        <span id="plan-stage-badge" class="tag"></span>
+      </div>
+
+      <h3 class="plan-subheading">{{ t('plan_alt_heading') }}</h3>
+      <ul id="plan-alternatives" class="plan-list"></ul>
+
+      <h3 class="plan-subheading">{{ t('plan_diet_heading') }}</h3>
+      <ul id="plan-diet" class="plan-list"></ul>
+
+      <div class="quote-box">
+        <div class="quote-heading">{{ t('plan_quote_heading') }}</div>
+        <div id="plan-quote" class="quote-text"></div>
+      </div>
+
+      <div class="fine-print" style="margin-top:14px;">{{ t('plan_disclaimer') }}</div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="panel">
+      <h2>{{ t('panel_shap_title') }}</h2>
+      <p style="color:var(--text-dim); font-size:13px; margin-top:-8px;">{{ t('panel_shap_sub') }}</p>
+      <div class="chart-wrap tall"><canvas id="shap-chart"></canvas></div>
+      <div class="empty-state" id="shap-empty">{{ t('run_check_hint') }}</div>
+    </div>
+
+    <div style="height:20px;"></div>
+
+    <div class="panel">
+      <h2>{{ t('panel_lime_title') }}</h2>
+      <p style="color:var(--text-dim); font-size:13px; margin-top:-8px;">{{ t('panel_lime_sub') }}</p>
+      <div class="chart-wrap tall"><canvas id="lime-chart"></canvas></div>
+      <div class="empty-state" id="lime-empty">{{ t('run_check_hint') }}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Small bridge so main.js can render a couple of dynamic strings in the
+  // user's chosen language without a full client-side i18n system.
+  window.I18N = {
+    explainSourceLlm: {{ t('explain_source_llm') | tojson }},
+    explainSourceTemplate: {{ t('explain_source_template') | tojson }},
+    explainError: {{ t('explain_error') | tojson }},
+  };
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
