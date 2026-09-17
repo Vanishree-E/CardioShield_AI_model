@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CardioShield AI - Doctor Risk Console</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f4f7fb;color:#172033}
+.wrap{max-width:1050px;margin:auto;padding:24px}
+.box{background:white;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #0001}
+h1{margin:0 0 6px} p{color:#64748b}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{padding:18px;border:2px solid #e2e8f0;border-radius:13px}
+.card.active{border-color:#2563eb}
+button{padding:12px 16px;margin:5px;border:0;border-radius:9px;font-weight:bold;cursor:pointer}
+.low{background:#dcfce7;color:#166534}.border{background:#fef3c7;color:#92400e}
+.high{background:#ffedd5;color:#9a3412}.critical{background:#fee2e2;color:#991b1b}
+.status{padding:18px;border-radius:12px;background:#f8fafc;border:2px solid #e2e8f0}
+.alert{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+@media(max-width:750px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:450px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="box"><h1>Doctor Risk Console</h1><p>CardioShield AI screening risk-status panel.</p></div>
+<div class="box">
+<div class="grid">
+<div id="c-low" class="card"><h2>Low</h2><p>Low screening status.</p></div>
+<div id="c-borderline" class="card"><h2>Borderline</h2><p>Borderline screening status.</p></div>
+<div id="c-high" class="card"><h2>High Risk</h2><p>High-risk screening status.</p></div>
+<div id="c-highrisk" class="card"><h2>High Risk Alert</h2><p>Doctor attention status.</p></div>
+</div>
+</div>
+<div class="box">
+<h2>Set Result</h2>
+<button class="low" onclick="setRisk('low')">Low</button>
+<button class="border" onclick="setRisk('borderline')">Borderline</button>
+<button class="high" onclick="setRisk('high')">High Risk</button>
+<button class="critical" onclick="setRisk('highrisk')">High Risk → Doctor Alert</button>
+</div>
+<div class="box"><h2>Doctor Console</h2><div id="status" class="status"><b>No result selected</b><br>Select a result above.</div><p id="time"></p></div>
+</div>
+<script>
+function setRisk(level){
+ document.querySelectorAll('.card').forEach(x=>x.classList.remove('active'));
+ document.getElementById('c-'+level).classList.add('active');
+ let s=document.getElementById('status'),t=new Date().toLocaleString();
+ if(level==='highrisk'){
+  s.className='status alert';
+  s.innerHTML='<b>HIGH RISK - DOCTOR ATTENTION</b><br>The screening result is marked High Risk. Please review the patient result in the clinical workflow.';
+ }else if(level==='high'){
+  s.className='status alert';
+  s.innerHTML='<b>HIGH RISK</b><br>The screening result is marked High Risk and should be reviewed by the doctor.';
+ }else if(level==='borderline'){
+  s.className='status';
+  s.innerHTML='<b>Borderline</b><br>The screening result is marked Borderline and may require follow-up review.';
+ }else{
+  s.className='status';
+  s.innerHTML='<b>Low</b><br>The screening result is marked Low.';
+ }
+ document.getElementById('time').textContent='Updated: '+t;
+ const u=new URL(location.href);u.searchParams.set('risk',level);history.replaceState({},'',u);
+}
+const r=new URLSearchParams(location.search).get('risk');
+if(['low','borderline','high','highrisk'].includes(r))setRisk(r);
+</script>
+</body>
+</html>
