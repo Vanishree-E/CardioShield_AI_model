@@ -214,5 +214,7 @@
     explainError: {{ t('explain_error') | tojson }},
   };
 </script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_triage.css') }}">
+<script src="{{ url_for('static', filename='js/doctor_triage.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock %}
