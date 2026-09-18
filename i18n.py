@@ -123,7 +123,7 @@ STRINGS = {
     "label_oldpeak": {"en": "Heart-strain score from an exercise test (ST depression)", "ta": "உடற்பயிற்சி பரிசோதனையின் இதய அழுத்த மதிப்பெண் (ST depression)"},
     "label_slope": {"en": "Shape of the ECG signal during peak exercise", "ta": "உச்ச உடற்பயிற்சியின்போது ECG சமிக்ஞையின் வடிவம்"},
     "label_ca": {"en": "Number of major blood vessels showing narrowing on a scan (0-4)", "ta": "ஸ்கேனில் குறுகலைக் காட்டும் முக்கிய இரத்த நாளங்களின் எண்ணிக்கை (0-4)"},
-    "label_thal": {"en": "Thalassemia blood test result", "ta": "தலசீமியா இரத்த பரிசோதனை முடிவு"},
+    "label_thal": {"en": "Thalassemia blood test results", "ta": "தலசீமியா இரத்த பரிசோதனை முடிவு"},
 
     # ---- personalized plan (shown after a prediction) -----------------------
     "plan_heading": {"en": "Your personalized plan", "ta": "உங்களுக்கான தனிப்பயன் திட்டம்"},
